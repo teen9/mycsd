@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Upcoming Events</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    .event { margin-bottom: 15px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+    .event-date { font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Upcoming Events</h1>
+  <div id="events-container">Loading events...</div>
+
+  <script>
+    async function loadEvents() {
+      const res = await fetch('events.json');
+      const data = await res.json();
+      const now = new Date();
+      const upcoming = data
+        .map(e => ({ ...e, dateObj: new Date(e.date) }))
+        .filter(e => e.dateObj >= now)
+        .sort((a, b) => a.dateObj - b.dateObj);
+
+      const container = document.getElementById('events-container');
+      container.innerHTML = '';
+
+      upcoming.forEach(event => {
+        const div = document.createElement('div');
+        div.className = 'event';
+        div.innerHTML = `
+          <div class="event-date">${event.date}</div>
+          <div class="event-name">${event.name}</div>
+          <div class="event-location">${event.location}</div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    loadEvents();
+  </script>
+</body>
+</html>
